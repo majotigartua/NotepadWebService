@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Notebook">
+    <delete id="delete" parameterType="int">
+        DELETE FROM
+        notebook
+        WHERE
+        idNotebook = #{idNotebook}
+    </delete> 
+    <select id="getByName" parameterType="model.pojo.Notebook" resultType="model.pojo.Notebook">
+        SELECT
+        idNotebook, name, hexadecimalColor, idUser
+        FROM
+        notebook
+        WHERE
+        name = #{name}
+        AND
+        idUser = #{idUser}
+    </select>
+    <select id="getByUser" parameterType="int" resultType="model.pojo.Notebook">
+        SELECT
+        idNotebook, name, hexadecimalColor, idUser
+        FROM
+        notebook
+        WHERE
+        idUser = #{idUser}
+    </select>
+    <insert id="log" parameterType="model.pojo.Notebook">
+        INSERT INTO
+        notebook
+        (name, hexadecimalColor, idUser)
+        VALUES
+        (#{name}, #{hexadecimalColor}, #{idUser})
+    </insert> 
+    <update id="update" parameterType="model.pojo.Notebook">
+        UPDATE
+        notebook
+        SET
+        name =  #{name}
+        hexadecimalColor = #{hexadecimalColor}
+        WHERE
+        idNotebook = #{idNotebook}
+    </update>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="3.0"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <filter>
+        <filter-name>BasicAuthenticationFilter</filter-name>
+        <filter-class>security.filter.BasicAuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>BasicAuthenticationFilter</filter-name>
+        <url-pattern>/api/basic/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>CrossOriginResourceSharingFilter</filter-name>
+        <filter-class>security.filter.CrossOriginResourceSharingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CrossOriginResourceSharingFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>TokenBasedAuthenticationFilter</filter-name>
+        <filter-class>security.filter.TokenBasedAuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TokenBasedAuthenticationFilter</filter-name>
+        <url-pattern>/api/auth/*</url-pattern>
+    </filter-mapping>
+</web-app>

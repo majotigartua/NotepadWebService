@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+    <insert id="signUp" parameterType="model.pojo.User">
+        INSERT INTO
+        user
+        (name, paternalSurname, maternalSurname, registrationDate, cellphoneNumber, password, oneTimePassword)
+        VALUES
+        (#{name}, #{paternalSurname}, #{maternalSurname}, #{registrationDate}, #{cellphoneNumber}, #{password}, #{oneTimePassword})
+    </insert> 
+    <select id="getByCellphoneNumber" parameterType="String" resultType="model.pojo.User">
+        SELECT
+        idUser, name, paternalSurname, maternalSurname, cellphoneNumber, password
+        FROM
+        user
+        WHERE
+        cellphoneNumber = #{cellphoneNumber}
+        AND
+        password = #{password}
+        AND
+        active = (1)
+    </select>
+    <select id="login" parameterType="model.pojo.User" resultType="model.pojo.User">
+        SELECT
+        idUser, name, paternalSurname, maternalSurname, cellphoneNumber, password
+        FROM
+        user
+        WHERE
+        cellphoneNumber = #{cellphoneNumber}
+        AND
+        password = #{password}
+        AND
+        active = (1)
+    </select>
+    <update id="activate" parameterType="model.pojo.User">
+        UPDATE
+        user
+        SET
+        active = (1)
+        WHERE
+        cellphoneNumber = #{cellphoneNumber}
+        AND
+        oneTimePassword = #{oneTimePassword}
+    </update>
+    <update id="update" parameterType="model.pojo.User">
+        UPDATE
+        user
+        SET
+        name = IFNULL(#{name}, name),
+        paternalSurname = IFNULL( #{paternalSurname}, paternalSurname),
+        maternalSurname = IFNULL(#{maternalSurname}, maternalSurname),
+        password = IFNULL(#{password}, password),
+        lastAccessToken = IFNULL(#{lastAccessToken}, lastAccessToken),
+        lastAccessDate = IFNULL(#{lastAccessDate}, lastAccessToken)
+        WHERE
+        idUser = #{idUser}
+    </update>
+</mapper>
