@@ -2,3 +2,4 @@
 /src/java/security/credentials.properties
 /src/java/security/jsonwebtokenconfiguration.properties
 /build/
+/dist/
