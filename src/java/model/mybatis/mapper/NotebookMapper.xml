@@ -39,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         UPDATE
         notebook
         SET
-        name =  #{name}
+        name =  #{name},
         hexadecimalColor = #{hexadecimalColor}
         WHERE
         idNotebook = #{idNotebook}

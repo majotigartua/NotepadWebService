@@ -1,5 +1,6 @@
 package webservice;
 
+import java.security.NoSuchAlgorithmException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -12,6 +13,7 @@ import model.dao.UserDAO;
 import model.pojo.Response;
 import model.pojo.User;
 import util.Constants;
+import util.Utilities;
 
 @Path("auth/user")
 public class UserWebService {
@@ -32,17 +34,23 @@ public class UserWebService {
             @FormParam("maternalSurname") String maternalSurname,
             @FormParam("password") String password) {
         Response response = new Response();
-        User user = new User();
-        user.setIdUser(idUser);
-        user.setName(name);
-        user.setPaternalSurname(paternalSurname);
-        user.setMaternalSurname(maternalSurname);
-        user.setPassword(password);
-        if (!checkEmptyFields(user)) {
-            response = UserDAO.update(user);
-        } else {
+        try {
+            password = Utilities.computeSHA256Hash(password);
+            User user = new User();
+            user.setIdUser(idUser);
+            user.setName(name);
+            user.setPaternalSurname(paternalSurname);
+            user.setMaternalSurname(maternalSurname);
+            user.setPassword(password);
+            if (!checkEmptyFields(user)) {
+                response = UserDAO.update(user);
+            } else {
+                response.setError(true);
+                response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+            }
+        } catch (NoSuchAlgorithmException exception) {
             response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+            response.setMessage(exception.getMessage());
         }
         return response;
     }

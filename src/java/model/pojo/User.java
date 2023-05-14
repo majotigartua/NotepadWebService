@@ -124,9 +124,4 @@ public class User {
         this.activationDate = activationDate;
     }
 
-    @Override
-    public String toString() {
-        return getName() + " " + getPaternalSurname() + " " + getMaternalSurname();
-    }
-
 }

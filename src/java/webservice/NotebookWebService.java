@@ -1,6 +1,7 @@
 package webservice;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -26,7 +27,7 @@ public class NotebookWebService {
     public NotebookWebService() {
     }
 
-    @GET
+    @DELETE
     @Path("delete")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,7 +51,7 @@ public class NotebookWebService {
     @Path("get/{idUser}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public void getByUser(@PathParam("idUser") int idUser) {
+    public Response getByUser(@PathParam("idUser") int idUser) {
         Response response = new Response();
         if (!String.valueOf(idUser).isEmpty()) {
             response = NotebookDAO.getByUser(idUser);
@@ -58,6 +59,7 @@ public class NotebookWebService {
             response.setError(true);
             response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
         }
+        return response;
     }
 
     @POST
@@ -90,7 +92,7 @@ public class NotebookWebService {
     @Path("update")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public void update(@FormParam("name") String name,
+    public Response update(@FormParam("name") String name,
             @FormParam("hexadecimalColor") String hexadecimalColor,
             @FormParam("idNotebook") int idNotebook) {
         Response response = new Response();
@@ -109,6 +111,7 @@ public class NotebookWebService {
             response.setError(true);
             response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
         }
+        return response;
     }
 
     public boolean checkEmptyFields(Notebook notebook) {

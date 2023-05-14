@@ -13,11 +13,10 @@ import java.util.ResourceBundle;
 import java.util.TimeZone;
 import model.pojo.Response;
 import model.pojo.Session;
-import model.pojo.User;
 import util.Constants;
 
 public class TokenBasedAuthentication {
-    
+
     public static Session generateAccessToken(Session session) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("security.jsonwebtokenconfiguration");
         String secretKey = resourceBundle.getString("SECRET_KEY");
@@ -28,17 +27,19 @@ public class TokenBasedAuthentication {
         currentTimeZone.add(Calendar.MINUTE, expirationTimeInMinutes);
         Date expirationTime = currentTimeZone.getTime();
         String accessToken = Jwts.builder()
-                .setSubject(session.getUser().toString())
-                .setIssuer(session.getUser().toString())
+                .setSubject(session.toString())
+                .setIssuer(session.toString())
                 .setIssuedAt(currentTime)
                 .setExpiration(expirationTime)
-                .claim("user", session.getUser())
+                .claim("name", session.getName())
+                .claim("paternalSurname", session.getPaternalSurname())
+                .claim("maternalSurname", session.getMaternalSurname())
                 .signWith(signatureAlgorithm, secretKey)
                 .compact();
         session.setAccessToken(accessToken);
         return session;
     }
-    
+
     public static Response validateAccessToken(String accessToken) {
         Response response = new Response();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("security.jsonwebtokenconfiguration");
@@ -47,8 +48,11 @@ public class TokenBasedAuthentication {
             try {
                 Claims unencryptedAccessToken = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
                 Session session = new Session();
-                session.setUser((User) unencryptedAccessToken.get("user"));
+                session.setName((String) unencryptedAccessToken.get("name"));
+                session.setPaternalSurname((String) unencryptedAccessToken.get("paternalSurname"));
+                session.setMaternalSurname((String) unencryptedAccessToken.get("maternalSurname"));
                 response.setError(false);
+                response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
                 response.setSession(session);
             } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException exception) {
                 response.setError(true);
@@ -60,5 +64,5 @@ public class TokenBasedAuthentication {
         }
         return response;
     }
-    
+
 }

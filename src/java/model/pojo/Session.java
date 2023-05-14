@@ -1,16 +1,17 @@
 package model.pojo;
 
 public class Session {
-    
+
     private String accessToken;
-    private User user;
+    private String name;
+    private String paternalSurname;
+    private String maternalSurname;
 
     public Session() {
     }
 
-    public Session(String accessToken, User user) {
+    public Session(String accessToken) {
         this.accessToken = accessToken;
-        this.user = user;
     }
 
     public String getAccessToken() {
@@ -21,12 +22,33 @@ public class Session {
         this.accessToken = accessToken;
     }
 
-    public User getUser() {
-        return user;
+    public String getName() {
+        return name;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setName(String name) {
+        this.name = name;
     }
-   
+
+    public String getPaternalSurname() {
+        return paternalSurname;
+    }
+
+    public void setPaternalSurname(String paternalSurname) {
+        this.paternalSurname = paternalSurname;
+    }
+
+    public String getMaternalSurname() {
+        return maternalSurname;
+    }
+
+    public void setMaternalSurname(String maternalSurname) {
+        this.maternalSurname = maternalSurname;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " " + getPaternalSurname() + " " + getMaternalSurname();
+    }
+    
 }

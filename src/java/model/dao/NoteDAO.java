@@ -11,8 +11,7 @@ public class NoteDAO {
 
     public static Response getByNotebook(int idNotebook) {
         Response response = new Response();
-        SqlSession sqlSession = MyBatis.getSqlSession();
-        try {
+        try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             List<Note> notes = sqlSession.selectList("Note.getByNotebook", idNotebook);
             sqlSession.commit();
             response.setError(false);

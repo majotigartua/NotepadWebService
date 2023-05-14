@@ -39,6 +39,7 @@ public class AccessWebService {
             User user = new User();
             user.setCellphoneNumber(cellphoneNumber);
             user.setOneTimePassword(oneTimePassword);
+            user.setActivationDate(Date.valueOf(LocalDate.now()));
             response = UserDAO.activate(user);
             if (response.isError()) {
                 response.setMessage(Constants.INVALID_DATA_MESSAGE);
@@ -59,21 +60,23 @@ public class AccessWebService {
         Response response = new Response();
         if (!cellphoneNumber.isEmpty() && !password.isEmpty()) {
             try {
-                User user = new User();
                 password = Utilities.computeSHA256Hash(password);
+                User user = new User();
                 user.setCellphoneNumber(cellphoneNumber);
                 user.setPassword(password);
                 response = UserDAO.login(user);
                 if (!response.isError()) {
+                    user = response.getUser();
                     Session session = new Session();
+                    session.setName(user.getName());
+                    session.setPaternalSurname(user.getPaternalSurname());
+                    session.setMaternalSurname(user.getMaternalSurname());
                     session = TokenBasedAuthentication.generateAccessToken(session);
                     String accessToken = session.getAccessToken();
                     if (!accessToken.isEmpty()) {
-                        user = response.getUser();
                         user.setLastAccessToken(accessToken);
                         user.setLastAccessDate(Date.valueOf(LocalDate.now()));
                         if (!UserDAO.update(user).isError()) {
-                            session.setUser(user);
                             response.setSession(session);
                         }
                     } else {

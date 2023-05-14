@@ -11,8 +11,7 @@ public class NotebookDAO {
 
     public static Response delete(int idNotebook) {
         Response response = new Response();
-        SqlSession sqlSession = MyBatis.getSqlSession();
-        try {
+        try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             sqlSession.delete("Notebook.delete", idNotebook);
             sqlSession.commit();
             response.setError(false);
@@ -27,8 +26,7 @@ public class NotebookDAO {
 
     public static Response getByUser(int idUser) {
         Response response = new Response();
-        SqlSession sqlSession = MyBatis.getSqlSession();
-        try {
+        try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             List<Notebook> notebooks = sqlSession.selectList("Notebook.getByUser", idUser);
             response.setError(false);
             response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
@@ -43,8 +41,7 @@ public class NotebookDAO {
 
     public static Response getByName(Notebook notebook) {
         Response response = new Response();
-        SqlSession sqlSession = MyBatis.getSqlSession();
-        try {
+        try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             List<Notebook> notebooks = sqlSession.selectList("Notebook.getByName", notebook);
             response.setError(false);
             response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
@@ -59,8 +56,7 @@ public class NotebookDAO {
 
     public static Response log(Notebook notebook) {
         Response response = new Response();
-        SqlSession sqlSession = MyBatis.getSqlSession();
-        try {
+        try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             sqlSession.insert("Notebook.log", notebook);
             sqlSession.commit();
             response.setError(false);
@@ -75,8 +71,7 @@ public class NotebookDAO {
 
     public static Response update(Notebook notebook) {
         Response response = new Response();
-        SqlSession sqlSession = MyBatis.getSqlSession();
-        try {
+        try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             sqlSession.update("Notebook.update", notebook);
             sqlSession.commit();
             response.setError(false);
