@@ -4,12 +4,67 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Note">
+    <insert id="log" parameterType="model.pojo.Note">
+        INSERT INTO
+        note
+        (title, content, creationDate, deleted, idNotebook, idPriority, idUser)
+        VALUES
+        (#{title}, #{content}, #{creationDate}, (0), #{idNotebook}, #{idPriority}, #{idUser})
+    </insert> 
     <select id="getByNotebook" parameterType="int" resultType="model.pojo.Note">
         SELECT
-        idNote, title, content
+        idNote, title, content, creationDate, idNotebook, idPriority, idUser
         FROM
         note
         WHERE
+        deleted = (0)
+        AND
         idNotebook = #{idNotebook}
     </select>
+    <select id="getByTitle" parameterType="model.pojo.Note" resultType="model.pojo.Note">
+        SELECT
+        idNote, title, content, creationDate, deleted, idNotebook, idPriority, idUser
+        FROM
+        note
+        WHERE
+        title = #{title}
+        AND
+        idNotebook =#{idNotebook}
+        AND
+        idUser = #{idUser}
+    </select>
+    <select id="getByUser" parameterType="model.pojo.Note" resultType="model.pojo.Note">
+        SELECT
+        idNote, title, content, creationDate, idNotebook, idPriority, idUser
+        FROM
+        note
+        WHERE
+        deleted = (0)
+        AND
+        ( #{idNotebook} IS NULL OR idNotebook = #{idNotebook})
+        AND
+        ( #{idPriority} IS NULL OR idPriority = #{idPriority})
+        AND
+        idUser= #{idUser}
+    </select>
+    <update id="delete" parameterType="int">
+        UPDATE
+        note
+        SET
+        deleted = (1)
+        WHERE
+        idNote = #{idNote}
+    </update>
+    <update id="update" parameterType="model.pojo.Note">
+        UPDATE
+        note
+        SET
+        title =  #{title},
+        content = #{content},
+        deleted = IFNULL(#{deleted}, deleted),
+        idNotebook = #{idNotebook},
+        idPriority = #{idPriority}
+        WHERE
+        idNote = #{idNote}
+    </update>
 </mapper>

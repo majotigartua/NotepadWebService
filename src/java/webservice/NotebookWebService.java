@@ -33,16 +33,12 @@ public class NotebookWebService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("idNotebook") int idNotebook) {
         Response response = new Response();
-        if (!String.valueOf(idNotebook).isEmpty()) {
-            if (NoteDAO.getByNotebook(idNotebook).getNotes().isEmpty()) {
-                response = NotebookDAO.delete(idNotebook);
-            } else {
-                response.setError(true);
-                response.setMessage(Constants.INVALID_DATA_MESSAGE);
-            }
+        boolean isEmpty = NoteDAO.getNotesByNotebook(idNotebook).getNotes().isEmpty();
+        if (isEmpty) {
+            response = NotebookDAO.delete(idNotebook);
         } else {
             response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+            response.setMessage(Constants.INVALID_DATA_MESSAGE);
         }
         return response;
     }
@@ -51,14 +47,8 @@ public class NotebookWebService {
     @Path("get/{idUser}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByUser(@PathParam("idUser") int idUser) {
-        Response response = new Response();
-        if (!String.valueOf(idUser).isEmpty()) {
-            response = NotebookDAO.getByUser(idUser);
-        } else {
-            response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
-        }
+    public Response getNotebooksByUser(@PathParam("idUser") int idUser) {
+        Response response = NotebookDAO.getNotebooksByUser(idUser);
         return response;
     }
 
@@ -70,20 +60,13 @@ public class NotebookWebService {
             @FormParam("hexadecimalColor") String hexadecimalColor,
             @FormParam("idUser") int idUser) {
         Response response = new Response();
-        Notebook notebook = new Notebook();
-        notebook.setName(name);
-        notebook.setHexadecimalColor(hexadecimalColor);
-        notebook.setIdUser(idUser);
-        if (!checkEmptyFields(notebook)) {
-            if (NotebookDAO.getByName(notebook).getNotebooks().isEmpty()) {
-                response = NotebookDAO.log(notebook);
-            } else {
-                response.setError(true);
-                response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
-            }
+        Notebook notebook = new Notebook(name, hexadecimalColor, idUser);
+        boolean isAvailable = NotebookDAO.getNotebookByName(notebook).getNotebook() == null;
+        if (isAvailable) {
+            response = NotebookDAO.log(notebook);
         } else {
             response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+            response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
         }
         return response;
     }
@@ -96,28 +79,15 @@ public class NotebookWebService {
             @FormParam("hexadecimalColor") String hexadecimalColor,
             @FormParam("idNotebook") int idNotebook) {
         Response response = new Response();
-        Notebook notebook = new Notebook();
-        notebook.setName(name);
-        notebook.setHexadecimalColor(hexadecimalColor);
-        notebook.setIdNotebook(idNotebook);
-        if (!checkEmptyFields(notebook)) {
-            if (NotebookDAO.getByName(notebook).getNotebooks().isEmpty()) {
-                response = NotebookDAO.update(notebook);
-            } else {
-                response.setError(true);
-                response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
-            }
+        Notebook notebook = new Notebook(idNotebook, name, hexadecimalColor);
+        boolean isAvailable = NotebookDAO.getNotebookByName(notebook).getNotebook() == null;
+        if (isAvailable) {
+            response = NotebookDAO.update(notebook);
         } else {
             response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+            response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
         }
         return response;
-    }
-
-    public boolean checkEmptyFields(Notebook notebook) {
-        return notebook.getName().isEmpty()
-                || notebook.getHexadecimalColor().isEmpty()
-                || String.valueOf(notebook.getIdUser()).isEmpty();
     }
 
 }

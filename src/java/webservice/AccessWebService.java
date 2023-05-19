@@ -35,18 +35,11 @@ public class AccessWebService {
     public Response activate(@FormParam("cellphoneNumber") String cellphoneNumber,
             @FormParam("oneTimePassword") String oneTimePassword) {
         Response response = new Response();
-        if (!cellphoneNumber.isEmpty() && !oneTimePassword.isEmpty()) {
-            User user = new User();
-            user.setCellphoneNumber(cellphoneNumber);
-            user.setOneTimePassword(oneTimePassword);
-            user.setActivationDate(Date.valueOf(LocalDate.now()));
-            response = UserDAO.activate(user);
-            if (response.isError()) {
-                response.setMessage(Constants.INVALID_DATA_MESSAGE);
-            }
-        } else {
-            response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+        Date activationDate = Date.valueOf(LocalDate.now());
+        User user = new User(cellphoneNumber, oneTimePassword, activationDate);
+        response = UserDAO.activate(user);
+        if (response.isError()) {
+            response.setMessage(Constants.INVALID_DATA_MESSAGE);
         }
         return response;
     }
@@ -58,44 +51,43 @@ public class AccessWebService {
     public Response login(@FormParam("cellphoneNumber") String cellphoneNumber,
             @FormParam("password") String password) {
         Response response = new Response();
-        if (!cellphoneNumber.isEmpty() && !password.isEmpty()) {
-            try {
-                password = Utilities.computeSHA256Hash(password);
-                User user = new User();
-                user.setCellphoneNumber(cellphoneNumber);
-                user.setPassword(password);
-                response = UserDAO.login(user);
-                if (!response.isError()) {
-                    user = response.getUser();
-                    Session session = new Session();
-                    session.setName(user.getName());
-                    session.setPaternalSurname(user.getPaternalSurname());
-                    session.setMaternalSurname(user.getMaternalSurname());
-                    session = TokenBasedAuthentication.generateAccessToken(session);
-                    String accessToken = session.getAccessToken();
-                    if (!accessToken.isEmpty()) {
-                        user.setLastAccessToken(accessToken);
-                        user.setLastAccessDate(Date.valueOf(LocalDate.now()));
-                        if (!UserDAO.update(user).isError()) {
-                            response.setSession(session);
-                        }
-                    } else {
-                        response.setError(true);
-                        response.setMessage(Constants.ACCESS_TOKEN_GENERATION_ERROR);
-                    }
-                } else {
-                    response.setError(true);
-                    response.setMessage(Constants.INVALID_DATA_MESSAGE);
+        try {
+            password = Utilities.computeSHA256Hash(password);
+        } catch (NoSuchAlgorithmException exception) {
+            response.setError(true);
+            response.setMessage(exception.getMessage());
+        }
+        User user = new User(cellphoneNumber, password);
+        response = UserDAO.login(user);
+        if (!response.isError()) {
+            user = response.getUser();
+            Session session = createSession(user);
+            String accessToken = session.getAccessToken();
+            if (!accessToken.isEmpty()) {
+                Date lastAccessDate = Date.valueOf(LocalDate.now());
+                user.setLastAccessToken(accessToken);
+                user.setLastAccessDate(lastAccessDate);
+                if (!UserDAO.update(user).isError()) {
+                    response.setSession(session);
                 }
-            } catch (NoSuchAlgorithmException exception) {
+            } else {
                 response.setError(true);
-                response.setMessage(exception.getMessage());
+                response.setMessage(Constants.ACCESS_TOKEN_GENERATION_ERROR);
             }
         } else {
             response.setError(true);
-            response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
+            response.setMessage(Constants.INVALID_DATA_MESSAGE);
         }
         return response;
+    }
+
+    public Session createSession(User user) {
+        Session session = new Session();
+        session.setName(user.getName());
+        session.setPaternalSurname(user.getPaternalSurname());
+        session.setMaternalSurname(user.getMaternalSurname());
+        session = TokenBasedAuthentication.generateAccessToken(session);
+        return session;
     }
 
     @POST
@@ -108,48 +100,38 @@ public class AccessWebService {
             @FormParam("cellphoneNumber") String cellphoneNumber,
             @FormParam("password") String password) {
         Response response = new Response();
-        User user = new User();
-        user.setName(name);
-        user.setPaternalSurname(paternalSurname);
-        user.setMaternalSurname(maternalSurname);
-        user.setCellphoneNumber(cellphoneNumber);
         try {
             password = Utilities.computeSHA256Hash(password);
-            String oneTimePassword = Utilities.generateOneTimePassword();
-            user.setRegistrationDate(Date.valueOf(LocalDate.now()));
-            user.setPassword(password);
-            user.setOneTimePassword(oneTimePassword);
-            if (!checkEmptyFields(user)) {
-                if (UserDAO.getByCellphoneNumber(cellphoneNumber).getUser() == null) {
-                    response = UserDAO.signUp(user);
-                    if (!response.isError()) {
-                        String sid = Utilities.sendShortMessageService(cellphoneNumber, oneTimePassword);
-                        if (sid.isEmpty()) {
-                            response.setError(true);
-                            response.setMessage(Constants.NO_SEND_SHORT_MESSAGE_SERVICE_CONNECTION_MESSAGE);
-                        }
-                    }
-                } else {
-                    response.setError(true);
-                    response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
-                }
-            } else {
-                response.setError(true);
-                response.setMessage(Constants.EMPTY_FIELDS_MESSAGE);
-            }
         } catch (NoSuchAlgorithmException exception) {
             response.setError(true);
             response.setMessage(exception.getMessage());
         }
+        boolean isAvailable = UserDAO.getUserByCellphoneNumber(cellphoneNumber).getUser() == null;
+        if (isAvailable) {
+            Date registrationDate = Date.valueOf(LocalDate.now());
+            String oneTimePassword = Utilities.generateOneTimePassword();
+            User user = new User(name, paternalSurname, maternalSurname, registrationDate, cellphoneNumber, password, oneTimePassword);
+            response = UserDAO.signUp(user);
+            if (!response.isError()) {
+                response = sendShortMessageService(response);
+            }
+        } else {
+            response.setError(true);
+            response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
+        }
         return response;
     }
 
-    public boolean checkEmptyFields(User user) {
-        return user.getName().isEmpty()
-                || user.getPaternalSurname().isEmpty()
-                || user.getMaternalSurname().isEmpty()
-                || user.getCellphoneNumber().isEmpty()
-                || user.getPassword().isEmpty();
+    private Response sendShortMessageService(Response response) {
+        User user = response.getUser();
+        String cellphoneNumber = user.getCellphoneNumber();
+        String oneTimePassword = user.getOneTimePassword();
+        String sid = Utilities.sendShortMessageService(cellphoneNumber, oneTimePassword);
+        if (sid.isEmpty()) {
+            response.setError(true);
+            response.setMessage(Constants.NO_SEND_SHORT_MESSAGE_SERVICE_CONNECTION_MESSAGE);
+        }
+        return response;
     }
 
 }

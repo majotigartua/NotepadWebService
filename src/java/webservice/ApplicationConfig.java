@@ -15,7 +15,9 @@ public class ApplicationConfig extends Application {
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(webservice.AccessWebService.class);
+        resources.add(webservice.NoteWebService.class);
         resources.add(webservice.NotebookWebService.class);
+        resources.add(webservice.PriorityWebService.class);
         resources.add(webservice.UserWebService.class);
     }
     

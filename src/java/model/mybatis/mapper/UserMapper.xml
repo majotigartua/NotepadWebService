@@ -25,11 +25,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
         user
         WHERE
+        active = (1)
+        AND
         cellphoneNumber = #{cellphoneNumber}
         AND
         password = #{password}
-        AND
-        active = (1)
     </select>
     <update id="activate" parameterType="model.pojo.User">
         UPDATE

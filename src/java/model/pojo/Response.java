@@ -11,6 +11,7 @@ public class Response {
     private Notebook notebook;
     private List<Notebook> notebooks;
     private Priority priority;
+    private List <Priority> priorities;
     private Session session;
     private User user;
 
@@ -76,6 +77,14 @@ public class Response {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public List<Priority> getPriorities() {
+        return priorities;
+    }
+
+    public void setPriorities(List<Priority> priorities) {
+        this.priorities = priorities;
     }
 
     public Session getSession() {

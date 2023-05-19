@@ -24,25 +24,26 @@ public class NotebookDAO {
         return response;
     }
 
-    public static Response getByUser(int idUser) {
+    public static Response getNotebookByName(Notebook notebook) {
         Response response = new Response();
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
-            List<Notebook> notebooks = sqlSession.selectList("Notebook.getByUser", idUser);
+            notebook = sqlSession.selectOne("Notebook.getByName", notebook);
             response.setError(false);
             response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
-            response.setNotebooks(notebooks);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
+            notebook = null;
             response.setError(true);
             response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
+        response.setNotebook(notebook);
         return response;
     }
 
-    public static Response getByName(Notebook notebook) {
+    public static Response getNotebooksByUser(int idUser) {
         Response response = new Response();
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
-            List<Notebook> notebooks = sqlSession.selectList("Notebook.getByName", notebook);
+            List<Notebook> notebooks = sqlSession.selectList("Notebook.getByUser", idUser);
             response.setError(false);
             response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
             response.setNotebooks(notebooks);

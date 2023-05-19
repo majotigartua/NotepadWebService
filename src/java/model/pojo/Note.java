@@ -1,13 +1,13 @@
 package model.pojo;
 
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 public class Note {
-    
+
     private int idNote;
     private String title;
     private String content;
-    private LocalDateTime creationDate;
+    private Date creationDate;
     private boolean deleted;
     private int idNotebook;
     private int idPriority;
@@ -16,10 +16,28 @@ public class Note {
     public Note() {
     }
 
-    public Note(String title, String content, LocalDateTime creationDate) {
+    public Note(int idUser) {
+        this.idUser = idUser;
+    }
+
+    public Note(int idNotebook, int idUser) {
+        this.idNotebook = idNotebook;
+        this.idUser = idUser;
+    }
+
+    public Note(String title, String content, int idNotebook, int idUser) {
         this.title = title;
         this.content = content;
-        this.creationDate = creationDate;
+        this.idNotebook = idNotebook;
+        this.idUser = idUser;
+    }
+
+    public Note(int idNote, String title, String content, int idNotebook, int idPriority) {
+        this.idNote = idNote;
+        this.title = title;
+        this.content = content;
+        this.idNotebook = idNotebook;
+        this.idPriority = idPriority;
     }
 
     public int getIdNote() {
@@ -46,11 +64,11 @@ public class Note {
         this.content = content;
     }
 
-    public LocalDateTime getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -85,5 +103,5 @@ public class Note {
     public void setIdUser(int idUser) {
         this.idUser = idUser;
     }
-    
+
 }

@@ -23,7 +23,7 @@ public class UserDAO {
         return response;
     }
 
-    public static Response getByCellphoneNumber(String cellphoneNumber) {
+    public static Response getUserByCellphoneNumber(String cellphoneNumber) {
         Response response = new Response();
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             User user = sqlSession.selectOne("User.getByCellphoneNumber", cellphoneNumber);
@@ -49,7 +49,7 @@ public class UserDAO {
             System.err.println(exception.getMessage());
             response.setError(true);
             response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
-                }
+        }
         return response;
     }
 
