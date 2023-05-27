@@ -7,16 +7,7 @@ public class Priority {
 
     public Priority() {
     }
-
-    public Priority(String name) {
-        this.name = name;
-    }
-
-    public Priority(int idPriority, String name) {
-        this.idPriority = idPriority;
-        this.name = name;
-    }
-
+    
     public int getIdPriority() {
         return idPriority;
     }

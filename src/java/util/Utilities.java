@@ -3,13 +3,9 @@ package util;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -17,12 +13,6 @@ import java.util.ResourceBundle;
 public class Utilities {
 
     private final static int RANDOM_NUMBER = 999999;
-
-    public static String computeSHA256Hash(String password) throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-        byte[] bytes = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(bytes);
-    }
 
     public static java.sql.Date convertToSqlDate(Date date) throws ParseException  {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

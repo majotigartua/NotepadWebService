@@ -6,7 +6,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -19,7 +18,7 @@ import model.pojo.Note;
 import model.pojo.Response;
 import util.Constants;
 
-@Path("auth/note")
+@Path("auth/notes")
 public class NoteWebService {
 
     @Context
@@ -30,16 +29,16 @@ public class NoteWebService {
 
     @DELETE
     @Path("delete")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@FormParam("idNote") int idNote) {
+    public Response delete(Note note) {
+        int idNote = note.getIdNote();
         Response response = NoteDAO.delete(idNote);
         return response;
     }
 
     @GET
     @Path("get/{idUser}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getNotesByUser(@PathParam("idUser") int idUser) {
         Note note = new Note(idUser);
@@ -49,40 +48,31 @@ public class NoteWebService {
 
     @GET
     @Path("get/{idUser}/{idNotebook}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getNotesByUser(@PathParam("idNotebook") int idNotebook,
-            @PathParam("idUser") int idUser) {
-        Note note = new Note(idNotebook, idUser);
+    public Response getNotesByUser(@PathParam("idUser") int idUser,
+            @PathParam("idNotebook") int idNotebook) {
+        Note note = new Note(idUser, idNotebook);
         Response response = NoteDAO.getNotesByUser(note);
         return response;
     }
 
     @GET
     @Path("get/{idUser}/{idNotebook}/{idPriority}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getNotesByUser(@PathParam("idNotebook") int idNotebook,
-            @PathParam("idPriority") int idPriority,
-            @PathParam("idUser") int idUser) {
-        Note note = new Note(idNotebook, idUser);
-        note.setIdPriority(idPriority);
+    public Response getNotesByUser(@PathParam("idUser") int idUser,
+            @PathParam("idNotebook") int idNotebook,
+            @PathParam("idPriority") int idPriority) {
+        Note note = new Note(idNotebook, idUser, idPriority);
         Response response = NoteDAO.getNotesByUser(note);
         return response;
     }
 
     @POST
     @Path("log")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response log(@FormParam("title") String title,
-            @FormParam("content") String content,
-            @FormParam("idNotebook") int idNotebook,
-            @FormParam("idPriority") int idPriority,
-            @FormParam("idUser") int idUser) {
+    public Response log(Note note) {
         Response response = new Response();
-        Note note = new Note(title, content, idNotebook, idUser);
-        note.setIdPriority(idPriority);
         boolean isAvailable = NoteDAO.getNoteByTitle(note).getNote() == null;
         if (isAvailable) {
             Date creationDate = Date.valueOf(LocalDate.now());
@@ -104,15 +94,10 @@ public class NoteWebService {
 
     @PUT
     @Path("update")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@FormParam("idNote") int idNote,
-            @FormParam("title") String title,
-            @FormParam("content") String content,
-            @FormParam("idNotebook") int idNotebook,
-            @FormParam("idPriority") int idPriority) {
+    public Response update(Note note) {
         Response response = new Response();
-        Note note = new Note(idNote, title, content, idNotebook, idPriority);
         boolean isAvailable = NoteDAO.getNoteByTitle(note).getNote() == null;
         if (isAvailable) {
             response = NoteDAO.update(note);

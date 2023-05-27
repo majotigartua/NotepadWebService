@@ -20,22 +20,13 @@ public class Note {
         this.idUser = idUser;
     }
 
-    public Note(int idNotebook, int idUser) {
-        this.idNotebook = idNotebook;
+    public Note(int idUser, int idNotebook) {
         this.idUser = idUser;
+        this.idNotebook = idNotebook;
     }
 
-    public Note(String title, String content, int idNotebook, int idUser) {
-        this.title = title;
-        this.content = content;
-        this.idNotebook = idNotebook;
+    public Note(int idUser, int idNotebook, int idPriority) {
         this.idUser = idUser;
-    }
-
-    public Note(int idNote, String title, String content, int idNotebook, int idPriority) {
-        this.idNote = idNote;
-        this.title = title;
-        this.content = content;
         this.idNotebook = idNotebook;
         this.idPriority = idPriority;
     }

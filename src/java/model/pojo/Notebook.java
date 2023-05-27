@@ -10,23 +10,6 @@ public class Notebook {
     public Notebook() {
     } 
 
-    public Notebook(String name, String hexadecimalColor) {
-        this.name = name;
-        this.hexadecimalColor = hexadecimalColor;
-    }
-
-    public Notebook(int idNotebook, String name, String hexadecimalColor) {
-        this.idNotebook = idNotebook;
-        this.name = name;
-        this.hexadecimalColor = hexadecimalColor;
-    }
-
-    public Notebook(String name, String hexadecimalColor, int idUser) {
-        this.name = name;
-        this.hexadecimalColor = hexadecimalColor;
-        this.idUser = idUser;
-    }
-
     public int getIdNotebook() {
         return idNotebook;
     }

@@ -20,35 +20,6 @@ public class User {
     public User() {
     }
 
-    public User(String cellphoneNumber, String password) {
-        this.cellphoneNumber = cellphoneNumber;
-        this.password = password;
-    }
-
-    public User(String cellphoneNumber, String oneTimePassword, Date activationDate) {
-        this.cellphoneNumber = cellphoneNumber;
-        this.oneTimePassword = oneTimePassword;
-        this.activationDate = activationDate;
-    }
-
-    public User(int idUser, String name, String paternalSurname, String maternalSurname, String password) {
-        this.idUser = idUser;
-        this.name = name;
-        this.paternalSurname = paternalSurname;
-        this.maternalSurname = maternalSurname;
-        this.password = password;
-    }
-
-    public User(String name, String paternalSurname, String maternalSurname, Date registrationDate, String cellphoneNumber, String password,  String oneTimePassword) {
-        this.name = name;
-        this.paternalSurname = paternalSurname;
-        this.maternalSurname = maternalSurname;
-        this.registrationDate = registrationDate;
-        this.cellphoneNumber = cellphoneNumber;
-        this.password = password;
-        this.oneTimePassword = oneTimePassword;
-    }
-
     public int getIdUser() {
         return idUser;
     }

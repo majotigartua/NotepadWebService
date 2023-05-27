@@ -2,7 +2,6 @@ package webservice;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -18,7 +17,7 @@ import model.pojo.Notebook;
 import model.pojo.Response;
 import util.Constants;
 
-@Path("auth/notebook")
+@Path("auth/notebooks")
 public class NotebookWebService {
 
     @Context
@@ -29,7 +28,7 @@ public class NotebookWebService {
 
     @DELETE
     @Path("delete")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("idNotebook") int idNotebook) {
         Response response = new Response();
@@ -54,13 +53,10 @@ public class NotebookWebService {
 
     @POST
     @Path("log")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response log(@FormParam("name") String name,
-            @FormParam("hexadecimalColor") String hexadecimalColor,
-            @FormParam("idUser") int idUser) {
+    public Response log(Notebook notebook) {
         Response response = new Response();
-        Notebook notebook = new Notebook(name, hexadecimalColor, idUser);
         boolean isAvailable = NotebookDAO.getNotebookByName(notebook).getNotebook() == null;
         if (isAvailable) {
             response = NotebookDAO.log(notebook);
@@ -73,13 +69,10 @@ public class NotebookWebService {
 
     @PUT
     @Path("update")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@FormParam("name") String name,
-            @FormParam("hexadecimalColor") String hexadecimalColor,
-            @FormParam("idNotebook") int idNotebook) {
+    public Response update(Notebook notebook) {
         Response response = new Response();
-        Notebook notebook = new Notebook(idNotebook, name, hexadecimalColor);
         boolean isAvailable = NotebookDAO.getNotebookByName(notebook).getNotebook() == null;
         if (isAvailable) {
             response = NotebookDAO.update(notebook);

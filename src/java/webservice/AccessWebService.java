@@ -1,10 +1,8 @@
 package webservice;
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.time.LocalDate;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -30,13 +28,12 @@ public class AccessWebService {
 
     @POST
     @Path("activate")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response activate(@FormParam("cellphoneNumber") String cellphoneNumber,
-            @FormParam("oneTimePassword") String oneTimePassword) {
+    public Response activate(User user) {
         Response response = new Response();
         Date activationDate = Date.valueOf(LocalDate.now());
-        User user = new User(cellphoneNumber, oneTimePassword, activationDate);
+        user.setActivationDate(activationDate);
         response = UserDAO.activate(user);
         if (response.isError()) {
             response.setMessage(Constants.INVALID_DATA_MESSAGE);
@@ -46,21 +43,13 @@ public class AccessWebService {
 
     @POST
     @Path("login")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@FormParam("cellphoneNumber") String cellphoneNumber,
-            @FormParam("password") String password) {
+    public Response login(User user) {
         Response response = new Response();
-        try {
-            password = Utilities.computeSHA256Hash(password);
-        } catch (NoSuchAlgorithmException exception) {
-            response.setError(true);
-            response.setMessage(exception.getMessage());
-        }
-        User user = new User(cellphoneNumber, password);
         response = UserDAO.login(user);
-        if (!response.isError()) {
-            user = response.getUser();
+        user = response.getUser();
+        if (user != null) {
             Session session = createSession(user);
             String accessToken = session.getAccessToken();
             if (!accessToken.isEmpty()) {
@@ -92,25 +81,17 @@ public class AccessWebService {
 
     @POST
     @Path("signup")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signUp(@FormParam("name") String name,
-            @FormParam("paternalSurname") String paternalSurname,
-            @FormParam("maternalSurname") String maternalSurname,
-            @FormParam("cellphoneNumber") String cellphoneNumber,
-            @FormParam("password") String password) {
+    public Response signUp(User user) {
         Response response = new Response();
-        try {
-            password = Utilities.computeSHA256Hash(password);
-        } catch (NoSuchAlgorithmException exception) {
-            response.setError(true);
-            response.setMessage(exception.getMessage());
-        }
+        String cellphoneNumber = user.getCellphoneNumber();
         boolean isAvailable = UserDAO.getUserByCellphoneNumber(cellphoneNumber).getUser() == null;
         if (isAvailable) {
             Date registrationDate = Date.valueOf(LocalDate.now());
             String oneTimePassword = Utilities.generateOneTimePassword();
-            User user = new User(name, paternalSurname, maternalSurname, registrationDate, cellphoneNumber, password, oneTimePassword);
+            user.setRegistrationDate(registrationDate);
+            user.setOneTimePassword(oneTimePassword);
             response = UserDAO.signUp(user);
             if (!response.isError()) {
                 response = sendShortMessageService(response);
