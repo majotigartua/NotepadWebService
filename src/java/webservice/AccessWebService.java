@@ -94,6 +94,7 @@ public class AccessWebService {
             user.setOneTimePassword(oneTimePassword);
             response = UserDAO.signUp(user);
             if (!response.isError()) {
+                response.setUser(user);
                 response = sendShortMessageService(response);
             }
         } else {
