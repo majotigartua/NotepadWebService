@@ -5,6 +5,7 @@ import java.util.List;
 public class Response {
 
     private boolean error;
+    private int code;
     private String message;
     private Note note;
     private List<Note> notes;
@@ -18,11 +19,6 @@ public class Response {
     public Response() {
     }
 
-    public Response(boolean error, String message) {
-        this.error = error;
-        this.message = message;
-    }
-
     public boolean isError() {
         return error;
     }
@@ -31,6 +27,14 @@ public class Response {
         this.error = error;
     }
 
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+    
     public String getMessage() {
         return message;
     }

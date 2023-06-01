@@ -2,6 +2,7 @@ package webservice;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
@@ -35,7 +36,11 @@ public class AccessWebService {
         Date activationDate = Date.valueOf(LocalDate.now());
         user.setActivationDate(activationDate);
         response = UserDAO.activate(user);
-        if (response.isError()) {
+        if (!response.isError()) {
+            response.setCode(HttpServletResponse.SC_OK);
+            response.setMessage(Constants.MODIFIED_INFORMATION_MESSAGE);
+        } else {
+            response.setCode(HttpServletResponse.SC_BAD_REQUEST);
             response.setMessage(Constants.INVALID_DATA_MESSAGE);
         }
         return response;
@@ -57,14 +62,21 @@ public class AccessWebService {
                 user.setLastAccessToken(accessToken);
                 user.setLastAccessDate(lastAccessDate);
                 if (!UserDAO.update(user).isError()) {
+                    response.setCode(HttpServletResponse.SC_OK);
+                    response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
                     response.setSession(session);
+                } else {
+                    response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
                 }
             } else {
                 response.setError(true);
+                response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.setMessage(Constants.ACCESS_TOKEN_GENERATION_ERROR);
             }
         } else {
             response.setError(true);
+            response.setCode(HttpServletResponse.SC_BAD_REQUEST);
             response.setMessage(Constants.INVALID_DATA_MESSAGE);
         }
         return response;
@@ -99,6 +111,7 @@ public class AccessWebService {
             }
         } else {
             response.setError(true);
+            response.setCode(HttpServletResponse.SC_BAD_REQUEST);
             response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
         }
         return response;
@@ -109,8 +122,12 @@ public class AccessWebService {
         String cellphoneNumber = user.getCellphoneNumber();
         String oneTimePassword = user.getOneTimePassword();
         String sid = Utilities.sendShortMessageService(cellphoneNumber, oneTimePassword);
-        if (sid.isEmpty()) {
+        if (!sid.isEmpty()) {
+            response.setCode(HttpServletResponse.SC_OK);
+            response.setMessage(Constants.REGISTERED_INFORMATION_MESSAGE);
+        } else {
             response.setError(true);
+            response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setMessage(Constants.NO_SEND_SHORT_MESSAGE_SERVICE_CONNECTION_MESSAGE);
         }
         return response;

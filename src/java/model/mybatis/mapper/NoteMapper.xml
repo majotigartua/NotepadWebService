@@ -41,9 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
         deleted = (0)
         AND
-        ( #{idNotebook} IS NULL OR idNotebook = #{idNotebook})
+        (COALESCE(#{idNotebook}, idNotebook) = idNotebook)
         AND
-        ( #{idPriority} IS NULL OR idPriority = #{idPriority})
+        (COALESCE(#{idPriority}, idPriority) = idPriority)
         AND
         idUser= #{idUser}
     </select>

@@ -1,5 +1,6 @@
 package webservice;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,8 +36,16 @@ public class NotebookWebService {
         boolean isEmpty = NoteDAO.getNotesByNotebook(idNotebook).getNotes().isEmpty();
         if (isEmpty) {
             response = NotebookDAO.delete(idNotebook);
+            if (!response.isError()) {
+                response.setCode(HttpServletResponse.SC_OK);
+                response.setMessage(Constants.DELETED_INFORMATION_MESSAGE);
+            } else {
+                response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
+            }
         } else {
             response.setError(true);
+            response.setCode(HttpServletResponse.SC_BAD_REQUEST);
             response.setMessage(Constants.INVALID_DATA_MESSAGE);
         }
         return response;
@@ -48,6 +57,13 @@ public class NotebookWebService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getNotebooksByUser(@PathParam("idUser") int idUser) {
         Response response = NotebookDAO.getNotebooksByUser(idUser);
+        if (!response.isError()) {
+            response.setCode(HttpServletResponse.SC_OK);
+            response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
+        } else {
+            response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
+        }
         return response;
     }
 
@@ -60,8 +76,16 @@ public class NotebookWebService {
         boolean isAvailable = NotebookDAO.getNotebookByName(notebook).getNotebook() == null;
         if (isAvailable) {
             response = NotebookDAO.log(notebook);
+            if (!response.isError()) {
+                response.setCode(HttpServletResponse.SC_OK);
+                response.setMessage(Constants.REGISTERED_INFORMATION_MESSAGE);
+            } else {
+                response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
+            }
         } else {
             response.setError(true);
+            response.setCode(HttpServletResponse.SC_BAD_REQUEST);
             response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
         }
         return response;
@@ -76,8 +100,16 @@ public class NotebookWebService {
         boolean isAvailable = NotebookDAO.getNotebookByName(notebook).getNotebook() == null;
         if (isAvailable) {
             response = NotebookDAO.update(notebook);
+            if (!response.isError()) {
+                response.setCode(HttpServletResponse.SC_OK);
+                response.setMessage(Constants.MODIFIED_INFORMATION_MESSAGE);
+            } else {
+                response.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
+            }
         } else {
             response.setError(true);
+            response.setCode(HttpServletResponse.SC_BAD_REQUEST);
             response.setMessage(Constants.DUPLICATED_INFORMATION_MESSAGE);
         }
         return response;

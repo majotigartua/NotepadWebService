@@ -5,7 +5,6 @@ import model.mybatis.MyBatis;
 import model.pojo.Notebook;
 import model.pojo.Response;
 import org.apache.ibatis.session.SqlSession;
-import util.Constants;
 
 public class NotebookDAO {
 
@@ -15,11 +14,9 @@ public class NotebookDAO {
             sqlSession.delete("Notebook.delete", idNotebook);
             sqlSession.commit();
             response.setError(false);
-            response.setMessage(Constants.DELETED_INFORMATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -29,12 +26,10 @@ public class NotebookDAO {
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             notebook = sqlSession.selectOne("Notebook.getByName", notebook);
             response.setError(false);
-            response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             notebook = null;
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         response.setNotebook(notebook);
         return response;
@@ -45,12 +40,10 @@ public class NotebookDAO {
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             List<Notebook> notebooks = sqlSession.selectList("Notebook.getByUser", idUser);
             response.setError(false);
-            response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
             response.setNotebooks(notebooks);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -61,11 +54,9 @@ public class NotebookDAO {
             sqlSession.insert("Notebook.log", notebook);
             sqlSession.commit();
             response.setError(false);
-            response.setMessage(Constants.REGISTERED_INFORMATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -76,11 +67,9 @@ public class NotebookDAO {
             sqlSession.update("Notebook.update", notebook);
             sqlSession.commit();
             response.setError(false);
-            response.setMessage(Constants.MODIFIED_INFORMATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }

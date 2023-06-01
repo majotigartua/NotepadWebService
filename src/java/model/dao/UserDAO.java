@@ -1,5 +1,6 @@
 package model.dao;
 
+import javax.servlet.http.HttpServletResponse;
 import model.mybatis.MyBatis;
 import model.pojo.Response;
 import model.pojo.User;
@@ -14,11 +15,9 @@ public class UserDAO {
             sqlSession.update("User.activate", user);
             sqlSession.commit();
             response.setError(false);
-            response.setMessage(Constants.MODIFIED_INFORMATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -28,12 +27,10 @@ public class UserDAO {
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             User user = sqlSession.selectOne("User.getByCellphoneNumber", cellphoneNumber);
             response.setError(false);
-            response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
             response.setUser(user);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -43,12 +40,10 @@ public class UserDAO {
         try (SqlSession sqlSession = MyBatis.getSqlSession()) {
             user = sqlSession.selectOne("User.login", user);
             response.setError(false);
-            response.setMessage(Constants.CORRECT_OPERATION_MESSAGE);
             response.setUser(user);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -59,11 +54,9 @@ public class UserDAO {
             sqlSession.insert("User.signUp", user);
             sqlSession.commit();
             response.setError(false);
-            response.setMessage(Constants.REGISTERED_INFORMATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
@@ -74,11 +67,9 @@ public class UserDAO {
             sqlSession.update("User.update", user);
             sqlSession.commit();
             response.setError(false);
-            response.setMessage(Constants.MODIFIED_INFORMATION_MESSAGE);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
             response.setError(true);
-            response.setMessage(Constants.NO_DATABASE_CONNECTION_MESSAGE);
         }
         return response;
     }
